@@ -9,5 +9,4 @@ void setcursor(bool visible, DWORD size); /*"Double Word," and it is a 32 - bit 
 void gotoxy(int x, int y);
 
 void show_border(int x, int y);
-
 #endif

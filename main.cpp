@@ -1,7 +1,7 @@
 #include "Clock.h"
 #include "Digits.h"
 
-int main() 
+int main()
 {
     Clock* clock = new Clock();
     clock->show();
