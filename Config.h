@@ -18,6 +18,7 @@ public:
     Color get_colors();
     bool get_display_dots() const;
     bool display_dots;
+
 };
 
 #endif

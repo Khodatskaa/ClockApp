@@ -10,56 +10,55 @@
 
 using namespace std;
 
-// Function to set cursor visibility and size
 void setcursor(bool visible, DWORD size) {
     if (size == 0) {
-        size = 12; // default cursor size
+        size = 12; 
     }
 
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO cursorInfo = { size, visible };
+    CONSOLE_CURSOR_INFO cursorInfo = { static_cast<DWORD>(size), static_cast<BOOL>(visible) };
     SetConsoleCursorInfo(console, &cursorInfo);
 }
 
-// Function to move cursor to a specific position
 void gotoxy(int x, int y) {
     COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleCursorPosition(output, pos);
 }
 
-// Function to display a border
+
 void show_border(int x, int y) {
     gotoxy(x, y);
     cout << char(201);
+
     for (size_t i = 0; i < 90; i++) {
         cout << char(205);
     }
+
     cout << char(187);
 
-    for (size_t i = static_cast<size_t>(y) + 1; i < static_cast<unsigned long long>(y) + 12; i++)
-    {
-        gotoxy(x, i);
-        cout << char(186);
-
+    for (size_t i = static_cast<size_t>(y) + 1; i < static_cast<size_t>(y) + 12; i++) {
         for (int j = 0; j < 90; j++) {
-            gotoxy(x + j + 1, i);
+            gotoxy(x + j, static_cast<int>(y) + 1);
             cout << char(205);
         }
 
-        gotoxy(x + 91, i);
+        cout << char(186);
+        gotoxy(x + 91, static_cast<int>(i));
         cout << char(186);
     }
 
     gotoxy(x, y + 12);
     cout << char(200);
+
     for (size_t i = 0; i < 90; i++) {
         cout << char(205);
     }
+
     cout << char(188);
 }
 
-// Function to output dots 
+
 int output_dots(bool flag, int x, int y) {
     if (flag) {
         Digits::double_dots(x, y);
@@ -70,7 +69,6 @@ int output_dots(bool flag, int x, int y) {
     return x + 7;
 }
 
-// Function to output a digit
 void output_digit(short number, int x, int y) {
     switch (number) {
     case 0: { Digits::zero(x, y); } break;
@@ -86,28 +84,18 @@ void output_digit(short number, int x, int y) {
     }
 }
 
-// Constructor
-Clock::Clock() {
+Clock::Clock() : config(), time(nullptr), is_hours_changed(false), is_minutes_changed(false), is_seconds_changed(false) {
     auto now = std::chrono::system_clock::now();
     std::time_t end_time = std::chrono::system_clock::to_time_t(now);
     unsigned short hours = std::localtime(&end_time)->tm_hour;
     unsigned short minutes = std::localtime(&end_time)->tm_min;
     unsigned short seconds = std::localtime(&end_time)->tm_sec;
 
-    is_hours_changed = false;
-    is_minutes_changed = false;
-    is_seconds_changed = false;
-
-    this->config = Config();
     this->time = new Time(hours, minutes, seconds);
 }
 
-Clock::Clock(Config config, Time time) {
-    this->config = config;
-    this->time = &time;
-}
+Clock::Clock(Config config, Time time) : config(config), time(&time), is_hours_changed(false), is_minutes_changed(false), is_seconds_changed(false) {}
 
-// Getter methods
 Config Clock::get_config() {
     return this->config;
 }
@@ -116,7 +104,6 @@ Time Clock::get_time() {
     return *time;
 }
 
-// Setter methods
 void Clock::set_config(Config config) {
     this->config = config;
 }
@@ -125,7 +112,6 @@ void Clock::set_time(Time time) {
     this->time = &time;
 }
 
-// Method to update the time
 void Clock::update() {
     auto now = std::chrono::system_clock::now();
     std::time_t end_time = std::chrono::system_clock::to_time_t(now);
@@ -133,6 +119,7 @@ void Clock::update() {
     unsigned short h = std::localtime(&end_time)->tm_hour;
     unsigned short m = std::localtime(&end_time)->tm_min;
     unsigned short s = std::localtime(&end_time)->tm_sec;
+
     delete this->time;
     this->time = new Time(h, m, s);
 }
@@ -144,7 +131,7 @@ void Clock::reset() {
 }
 
 void Clock::show() {
-    setcursor(0, 0); // hide cursor
+    setcursor(0, 0); 
 
     do {
         const char* am_pm = (this->time->get_hours() < 12) ? "AM" : "PM";
@@ -158,8 +145,8 @@ void Clock::show() {
         else if (h == 0)
             h = 12;
 
-        int x = 0;  
-        int y = 0;  
+        int x = 0;
+        int y = 0;
 
         show_digits(int(h / 10), x, y);
         show_digits(int(h) % 10, x, y);
@@ -173,7 +160,6 @@ void Clock::show() {
         // Display AM/PM
         gotoxy(x, y + 1);
         std::cout << am_pm;
-
 
     } while (true);
 }
@@ -201,8 +187,7 @@ void Clock::show_s() {
     show_digits(int(time->get_seconds()) % 10, x, y);
 }
 
-inline int Clock::show_digits(short number, int x, int y)
-{
+int Clock::show_digits(short number, int x, int y) {
     output_digit(number, x, y);
     return x + 7;
 }

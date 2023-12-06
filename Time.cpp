@@ -1,5 +1,6 @@
 #include "Time.h"
 
+
 Time::Time()
 {
 	this->hours = 0;
@@ -14,7 +15,6 @@ Time::Time(unsigned short hours, unsigned short minutes, unsigned short seconds)
 	this->seconds = seconds;
 }
 
-//Getters
 unsigned short Time::get_hours()
 {
 	return this->hours;
@@ -30,7 +30,6 @@ unsigned short Time::get_seconds()
 	return this->seconds;
 }
 
-//Setters
 void Time::set_hours(unsigned short hours)
 {
 	this->hours = hours;
